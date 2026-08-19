@@ -92,6 +92,13 @@ matters a lot for how much weight the workbook's own README should put on "Windo
 only remaining gate" — if the endpoint/field details weren't actually observed live, that's a
 second gate, not just the compile step.
 
+**Update: asked the user directly whether the v1.0-producing session had live access — answer was
+"not sure / don't know."** Treat every "LIVE VERIFIED" / "LIVE SCHEMA VERIFIED" / "LIVE ENDPOINT
+VERIFIED" label in `LIVE_VERIFICATION_NOTES_v1_0.md` as unconfirmed until the Windows test below
+actually happens. This isn't a knock on v1.0 — the content is plausible and well-organized either
+way — it just means the live test is the real gate, not a formality after "everything else already
+checked out."
+
 One more thing worth a direct look before you rely on this: the regression PINs in
 `LIVE_VERIFICATION_NOTES_v1_0.md` include `16-30-204-020-0000` — the same PIN the original
 codebase's own `TestAdapters` comment called "a safe public smoke-test example... not enough for
