@@ -1,0 +1,22 @@
+COOK COUNTY PROPERTY DUE DILIGENCE v1.0.3c
+MAC + WINDOWS BUILD
+
+IMPORTANT: v1.0.3c fixes the Excel repair error caused by overlapping merged-cell records on the Instructions worksheet.
+The corrected workbook has been checked at the OOXML level: Instructions contains zero merge records and no worksheet contains overlapping merges.
+
+MAC - ONE-TIME SETUP
+1. Unzip this package.
+2. Double-click "Install Mac Helper.command".
+3. The installer copies CookPropertyHTTP.applescript into Excel's Application Scripts folder and opens the corrected workbook.
+4. Save the workbook as an Excel Macro-Enabled Workbook (.xlsm).
+5. Excel > Tools > Macro > Visual Basic Editor.
+6. File > Import File > CookPropertyDueDiligence_v1_0_3_CROSS_PLATFORM.bas.
+7. Debug > Compile VBAProject.
+8. Save, close, and reopen the .xlsm with macros enabled.
+9. The blue RUN PROPERTY RESEARCH button will be created automatically.
+
+WINDOWS
+Use the same workbook and same .bas module. Windows uses WinHTTP automatically; the Mac helper is ignored.
+
+FIRST MAC TEST PIN
+16-30-204-020-0000
