@@ -1,0 +1,36 @@
+COOK COUNTY PROPERTY DUE DILIGENCE v1.0.3
+MAC + WINDOWS BUILD
+
+MAC - ONE-TIME SETUP
+1. Unzip the package.
+2. Double-click "Install Mac Helper.command".
+   - If macOS blocks it, Control-click/right-click it and choose Open once.
+3. Excel opens the workbook.
+4. Save the workbook as an Excel Macro-Enabled Workbook (.xlsm).
+5. Excel > Tools > Macro > Visual Basic Editor.
+6. File > Import File > CookPropertyDueDiligence_v1_0_3_CROSS_PLATFORM.bas
+7. Debug > Compile VBAProject.
+8. Save, close, and reopen the .xlsm with macros enabled.
+9. The blue RUN PROPERTY RESEARCH button is created automatically.
+
+AFTER THAT ON MAC
+Enter PIN > click RUN PROPERTY RESEARCH > the research runs > PDF is generated/opened.
+
+WINDOWS
+Use the same workbook and same .bas module. The module detects Windows at compile time
+and uses WinHTTP automatically. The AppleScript helper is ignored on Windows.
+
+WHY THE MAC HELPER EXISTS
+Excel for Mac is sandboxed. Microsoft documents AppleScriptTask as the supported bridge
+for VBA to run an external AppleScript and requires that script in:
+~/Library/Application Scripts/com.microsoft.Excel/
+The included installer puts it there automatically.
+
+CROSS-PLATFORM CHANGES
+v1.0.3 removes the other Windows-only parser dependencies too: VBScript.RegExp and
+Scripting.Dictionary were replaced with pure VBA logic/Collections.
+
+FIRST MAC TEST
+Use PIN 16-30-204-020-0000 first. If Excel reports a compile/runtime error, send the
+exact dialog and highlighted line. Preserve this v1.0.3 baseline rather than reverting
+to the older Windows-only module.
