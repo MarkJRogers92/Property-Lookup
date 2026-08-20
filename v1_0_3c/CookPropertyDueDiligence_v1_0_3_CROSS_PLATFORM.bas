@@ -215,7 +215,7 @@ Private Sub FetchAddress(ByVal pin As String)
     If rows.Count < 2 Then Err.Raise vbObjectError + 101, , "No address record returned."
     Set d = CsvRowDict(rows(1), rows(2))
 
-    SetProperty "PIN", pin, "Assessor Addresses", Nz(DictGet(d, "year")), "OK", ""
+    SetProperty "PIN", FormatPin(pin), "Assessor Addresses", Nz(DictGet(d, "year")), "OK", ""
     SetProperty "Property Address", DictGet(d, "prop_address_full"), "Assessor Addresses", Nz(DictGet(d, "year")), "OK", ""
     SetProperty "Property City / ZIP", Trim$(Nz(DictGet(d, "prop_address_city_name")) & " " & Nz(DictGet(d, "prop_address_zipcode_1"))), "Assessor Addresses", Nz(DictGet(d, "year")), "OK", ""
     SetProperty "Owner Name", DictGet(d, "owner_address_name"), "Assessor Addresses", Nz(DictGet(d, "year")), "CAUTION", "Owner/mailing data may be intermittently updated."
@@ -1442,8 +1442,62 @@ Private Function CollapseWhitespace(ByVal s As String) As String
     CollapseWhitespace = Trim$(s)
 End Function
 
+' ArcGIS REST query responses place a "fieldAliases" map (field name -> alias, which
+' defaults to the field name itself when no custom alias is configured) before the
+' actual "attributes" of each returned feature. A "find this key anywhere in the JSON"
+' scan can match that alias entry instead of the real value, which silently returns the
+' field's own name as if it were the data (e.g. BCLASS -> "BCLASS" instead of "2-02").
+' Scoping every lookup to the first feature's "attributes" object avoids that entirely.
+' Falls back to the whole document if no "attributes" object is found, so non-feature
+' JSON (or a malformed/truncated response) still gets a best-effort lookup.
+Private Function ArcGisFirstAttributesJson(ByVal js As String) As String
+    Dim p As Long, openPos As Long, i As Long, depth As Long, ch As String
+    Dim inStr As Boolean, esc As Boolean
+
+    p = InStr(1, js, """attributes""", vbTextCompare)
+    If p = 0 Then
+        ArcGisFirstAttributesJson = js
+        Exit Function
+    End If
+    openPos = InStr(p, js, "{", vbBinaryCompare)
+    If openPos = 0 Then
+        ArcGisFirstAttributesJson = js
+        Exit Function
+    End If
+
+    depth = 0
+    inStr = False
+    esc = False
+    For i = openPos To Len(js)
+        ch = Mid$(js, i, 1)
+        If inStr Then
+            If esc Then
+                esc = False
+            ElseIf ch = "\" Then
+                esc = True
+            ElseIf ch = """" Then
+                inStr = False
+            End If
+        Else
+            Select Case ch
+                Case """": inStr = True
+                Case "{": depth = depth + 1
+                Case "}"
+                    depth = depth - 1
+                    If depth = 0 Then
+                        ArcGisFirstAttributesJson = Mid$(js, openPos, i - openPos + 1)
+                        Exit Function
+                    End If
+            End Select
+        End If
+    Next i
+
+    ArcGisFirstAttributesJson = js
+End Function
+
 Private Function JsonScalar(ByVal js As String, ByVal key As String) As String
     Dim p As Long, colonPos As Long, i As Long, ch As String, out As String
+    js = ArcGisFirstAttributesJson(js)
     p = InStr(1, js, """" & key & """", vbTextCompare)
     If p = 0 Then Exit Function
     colonPos = InStr(p + Len(key) + 2, js, ":", vbBinaryCompare)
