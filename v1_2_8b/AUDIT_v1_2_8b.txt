@@ -1,0 +1,31 @@
+v1.2.8b STATIC / STRUCTURAL AUDIT
+
+{
+  "Workbook merge overlaps": [],
+  "VBA subs balanced": [
+    73,
+    73,
+    true
+  ],
+  "VBA functions balanced": [
+    73,
+    73,
+    true
+  ],
+  "Duplicate procedures": [],
+  "Reset uses merge-safe helper count": 9,
+  "Partial Report A14 clear absent": true,
+  "Full Report merged reset present": true,
+  "Multi-area helper loops Areas": true,
+  "Main run present": true,
+  "Setup present": true,
+  "Module SHA256": "933f25322e5050a77352f6ffa76ed901dfabe0ebdbaac9524920427b527f2081",
+  "Workbook SHA256": "1715943e93d3d8a51a407aeb8699ef58e01231c6080991299f46f818725ba39a"
+}
+
+Known merge/reset intersection intentionally handled:
+- Report!A14:H21 is merged and is reset through ClearContentsMergeSafe_v128b.
+
+Remaining validation gate:
+- Debug > Compile VBAProject in Windows Excel
+- One live PIN run through research + PDF export
