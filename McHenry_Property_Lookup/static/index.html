@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>McHenry Property Lookup</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="topbar">
+  <h1>McHenry Property Lookup</h1>
+  <p class="subtitle">Search McHenry County, IL parcels, subdivisions, roads and address points</p>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-tab="parcels">Parcels</button>
+  <button class="tab" data-tab="subdivisions">Subdivisions</button>
+  <button class="tab" data-tab="roads">Roads</button>
+  <button class="tab" data-tab="addresses">Address Points</button>
+</nav>
+
+<main>
+  <section class="panel active" id="panel-parcels">
+    <div class="searchbar">
+      <input type="search" id="parcels-q" placeholder="Search by owner name, site address, or PIN (e.g. 14-21-301-003)">
+    </div>
+    <div class="results" id="parcels-results"></div>
+  </section>
+
+  <section class="panel" id="panel-subdivisions">
+    <div class="searchbar">
+      <input type="search" id="subdivisions-q" placeholder="Search by subdivision name or subcode">
+    </div>
+    <div class="results" id="subdivisions-results"></div>
+  </section>
+
+  <section class="panel" id="panel-roads">
+    <div class="searchbar">
+      <input type="search" id="roads-q" placeholder="Search by road name or municipality">
+    </div>
+    <div class="results" id="roads-results"></div>
+  </section>
+
+  <section class="panel" id="panel-addresses">
+    <div class="searchbar">
+      <input type="search" id="addresses-q" placeholder="Search by address or street name">
+    </div>
+    <div class="results" id="addresses-results"></div>
+  </section>
+</main>
+
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
