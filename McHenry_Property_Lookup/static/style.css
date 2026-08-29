@@ -216,6 +216,36 @@ table.result-table tbody tr.clickable:hover { background: var(--row-hover); }
   gap: 2px 16px;
 }
 
+.portal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.pin-copy {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13.5px;
+  background: #fafbf9;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.copy-btn {
+  font-size: 12.5px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  background: var(--row-hover);
+}
+
 a.map-link {
   color: var(--accent);
   text-decoration: none;
