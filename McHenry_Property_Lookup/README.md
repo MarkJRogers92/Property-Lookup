@@ -89,7 +89,11 @@ python3 server.py --db /path/to/other.db
   spotting absentee owners), property class, tax code, every taxing
   district (school, fire, park, library, road, sanitary, drainage,
   forest preserve, etc.), land use classification, acreage, a map link,
-  and the legal description.
+  the legal description, and a **County Tax & Assessment Records** box
+  with a one-click "Copy PIN" button plus a link to McHenry County's own
+  tax/assessment portal (mchenryil.devnetwedge.com) -- that portal has
+  assessed value, sale history, and tax bill amounts, none of which are
+  in this GIS export.
 - **Subdivisions tab** -- search platted subdivisions by name or subcode,
   with plat book/page references.
 - **Roads tab** -- search road centerlines by name or municipality;

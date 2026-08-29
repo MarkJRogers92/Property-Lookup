@@ -176,6 +176,18 @@ function renderParcelDetail(p) {
         ${field("Tax Code", p.tax_code)}
       </div>
       <div class="detail-section">
+        <h3>County Tax &amp; Assessment Records</h3>
+        <p class="field">This export doesn't include assessed value, sale price, or tax bill amounts &mdash; that lives on the county's own portal.</p>
+        <div class="portal-row">
+          <code class="pin-copy" id="portal-pin">${escapeHtml(p.county_pin_digits)}</code>
+          <button type="button" class="copy-btn" id="copy-pin-btn">Copy PIN</button>
+        </div>
+        <p class="field">
+          <a class="map-link" target="_blank" rel="noopener" href="${escapeHtml(p.county_portal_url)}">Open McHenry County Tax Portal ↗</a>
+          &mdash; paste the PIN above into its parcel search.
+        </p>
+      </div>
+      <div class="detail-section">
         <h3>Taxing Districts</h3>
         <div class="districts-grid">
           ${districtFields.map(([label, v]) => field(label, v)).join("")}
@@ -192,6 +204,22 @@ function renderParcelDetail(p) {
     </div>
   `;
   openModal(html);
+
+  const copyBtn = $("#copy-pin-btn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      const pin = $("#portal-pin").textContent;
+      try {
+        await navigator.clipboard.writeText(pin);
+        copyBtn.textContent = "Copied!";
+      } catch (err) {
+        copyBtn.textContent = "Copy failed -- select manually";
+      }
+      setTimeout(() => {
+        copyBtn.textContent = "Copy PIN";
+      }, 1500);
+    });
+  }
 }
 
 function setup() {

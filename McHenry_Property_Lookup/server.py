@@ -14,6 +14,7 @@ Then open http://localhost:8000/ in a browser.
 import argparse
 import json
 import os
+import re
 import sqlite3
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
@@ -47,20 +48,34 @@ def clamp_limit(raw, default=50):
     return max(1, min(n, SEARCH_LIMIT_MAX))
 
 
+def escape_like(s):
+    return re.sub(r"([%_\\])", r"\\\1", s)
+
+
+def wildcard_pattern(q):
+    """Build a LIKE pattern that matches regardless of how many spaces
+    separate words. McHenry's own export is inconsistent about this (e.g.
+    site addresses have a double space between house number and street
+    name), so a plain single-spaced user query would otherwise match
+    nothing."""
+    tokens = q.strip().upper().split()
+    return "%" + "%".join(escape_like(t) for t in tokens) + "%"
+
+
 def search_parcels(conn, q, limit):
     q = q.strip()
-    pin_pattern = f"%{normalize_pin(q)}%"
-    text_pattern = f"%{q.upper()}%"
+    pin_pattern = f"%{escape_like(normalize_pin(q))}%"
+    text_pattern = wildcard_pattern(q)
     rows = conn.execute(
         """
         SELECT objectid, parcel_number, owner, site_address, site_city,
                property_class, tax_status, township, parcel_area
         FROM parcels
-        WHERE parcel_number_norm LIKE ?
-           OR owner LIKE ? COLLATE NOCASE
-           OR site_address LIKE ? COLLATE NOCASE
+        WHERE parcel_number_norm LIKE ? ESCAPE '\\'
+           OR owner LIKE ? ESCAPE '\\' COLLATE NOCASE
+           OR site_address LIKE ? ESCAPE '\\' COLLATE NOCASE
         ORDER BY
-            CASE WHEN parcel_number_norm LIKE ? THEN 0 ELSE 1 END,
+            CASE WHEN parcel_number_norm LIKE ? ESCAPE '\\' THEN 0 ELSE 1 END,
             owner
         LIMIT ?
         """,
@@ -82,16 +97,23 @@ def get_parcel(conn, parcel_number):
         (pin_norm,),
     ).fetchall()
     parcel["landuse"] = rows_to_list(landuse)
+    # McHenry County's live tax/assessment records (assessed value, sale
+    # history, payment status) live on the county's own wEDGE portal, not
+    # in this GIS export. That portal's per-parcel URLs require a tax year
+    # segment we can't reliably predict here, so we link to its search
+    # home page instead and hand over the PIN digits to paste in.
+    parcel["county_pin_digits"] = re.sub(r"\D", "", parcel_number)
+    parcel["county_portal_url"] = "https://mchenryil.devnetwedge.com/"
     return parcel
 
 
 def search_subdivisions(conn, q, limit):
-    pattern = f"%{q.strip().upper()}%"
+    pattern = wildcard_pattern(q)
     rows = conn.execute(
         """
         SELECT fid, subcode, name, pages, createdon, lastupdate
         FROM subdivisions
-        WHERE name LIKE ? COLLATE NOCASE OR subcode LIKE ?
+        WHERE name LIKE ? ESCAPE '\\' COLLATE NOCASE OR subcode LIKE ? ESCAPE '\\'
         ORDER BY name
         LIMIT ?
         """,
@@ -101,14 +123,14 @@ def search_subdivisions(conn, q, limit):
 
 
 def search_roads(conn, q, limit):
-    pattern = f"%{q.strip().upper()}%"
+    pattern = wildcard_pattern(q)
     rows = conn.execute(
         """
         SELECT name, jurisdiction_name, jurisdiction, funct_class_name,
                us_route1, state_route1, county_route1,
                COUNT(*) AS segment_count, SUM(shape_length) AS total_length_ft
         FROM roads
-        WHERE name LIKE ? COLLATE NOCASE OR jurisdiction_name LIKE ? COLLATE NOCASE
+        WHERE name LIKE ? ESCAPE '\\' COLLATE NOCASE OR jurisdiction_name LIKE ? ESCAPE '\\' COLLATE NOCASE
         GROUP BY name, jurisdiction_name
         ORDER BY name
         LIMIT ?
@@ -119,13 +141,13 @@ def search_roads(conn, q, limit):
 
 
 def search_addresses(conn, q, limit):
-    pattern = f"%{q.strip().upper()}%"
+    pattern = wildcard_pattern(q)
     rows = conn.execute(
         """
         SELECT full_address, add_number, street_name, street_type, unit,
                municipality, postal_code, latitude, longitude
         FROM address_points
-        WHERE full_address LIKE ? COLLATE NOCASE OR street_name LIKE ? COLLATE NOCASE
+        WHERE full_address LIKE ? ESCAPE '\\' COLLATE NOCASE OR street_name LIKE ? ESCAPE '\\' COLLATE NOCASE
         ORDER BY full_address
         LIMIT ?
         """,
