@@ -12,6 +12,29 @@ run time -- everything runs off a local SQLite database built from the
 county's CSV export. Backend is pure Python standard library (no `pip
 install` needed); frontend is plain HTML/CSS/JS.
 
+## Quick start (Mac)
+
+1. Put the county's data export zip file (or an unzipped `Mchenry/`
+   folder containing the CSVs) right next to `Start McHenry Property
+   Lookup.command` in this folder.
+2. Double-click **`Start McHenry Property Lookup.command`**.
+
+First run unzips the data (if needed), builds the local database
+(10-30 seconds), starts the app, and opens it in your browser
+automatically. Every run after that starts instantly. A Terminal
+window stays open while the app runs -- close it (or press Ctrl+C in
+it) to stop the app.
+
+If macOS says the file can't be opened because it's from an
+unidentified developer: right-click it, choose **Open**, then confirm.
+That's only needed the first time.
+
+If Python 3 isn't installed, the script will tell you and point you to
+python.org.
+
+The rest of this README covers running it manually (any OS) and how the
+app works.
+
 ## 1. Get the data
 
 You need McHenry County's GIS open-data CSV export, containing:
